@@ -43,14 +43,22 @@ def save_result():
             if image is not None:
                 # Intenta guardar la imagen con los rostros detectados
                 try:
-                    cv2.imwrite(file_path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
-                    print("Resultado guardado correctamente.")
+                    # Verifica si la imagen ya está en el formato correcto (BGR)
+                    if len(image.shape) == 3 and image.shape[2] == 3:
+                        cv2.imwrite(file_path, image)
+                        print("Resultado guardado correctamente.")
+                    else:
+                        # Si no está en el formato correcto, intenta convertirla
+                        converted_image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                        cv2.imwrite(file_path, converted_image)
+                        print("Resultado guardado correctamente.")
                 except Exception as e:
                     print("Error al guardar la imagen:", e)
             else:
                 print("Error: No se ha cargado ninguna imagen.")
     else:
         print("Primero debes detectar los rostros.")
+
 
 
 
