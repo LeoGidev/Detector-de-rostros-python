@@ -7,3 +7,5 @@ image = cv2.imread(image_path)
 # Crea el clasificador de rostros
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
+# Convierte la imagen a escala de grises
+gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
