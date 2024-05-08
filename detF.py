@@ -41,15 +41,17 @@ def save_result():
         if file_path:
             # Verifica si la imagen se ha cargado correctamente
             if image is not None:
+                # Convierte la imagen de PhotoImage a una matriz NumPy
+                image_np = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
                 # Intenta guardar la imagen con los rostros detectados
                 try:
                     # Verifica si la imagen ya está en el formato correcto (BGR)
-                    if len(image.shape) == 3 and image.shape[2] == 3:
-                        cv2.imwrite(file_path, image)
+                    if len(image_np.shape) == 3 and image_np.shape[2] == 3:
+                        cv2.imwrite(file_path, image_np)
                         print("Resultado guardado correctamente.")
                     else:
                         # Si no está en el formato correcto, intenta convertirla
-                        converted_image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                        converted_image = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
                         cv2.imwrite(file_path, converted_image)
                         print("Resultado guardado correctamente.")
                 except Exception as e:
@@ -58,6 +60,8 @@ def save_result():
                 print("Error: No se ha cargado ninguna imagen.")
     else:
         print("Primero debes detectar los rostros.")
+
+
 
 
 
