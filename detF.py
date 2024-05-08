@@ -34,7 +34,8 @@ def detect_faces():
         image_label.image = image
 
 def save_result():
-    if faces:
+    global faces
+    if faces is not None and len(faces) > 0:
         # Guarda la imagen con los rostros detectados
         file_path = filedialog.asksaveasfilename(defaultextension=".jpg")
         if file_path:
@@ -42,6 +43,7 @@ def save_result():
             print("Resultado guardado correctamente.")
     else:
         print("Primero debes detectar los rostros.")
+
 
 # Configuración de la interfaz gráfica
 root = tk.Tk()
