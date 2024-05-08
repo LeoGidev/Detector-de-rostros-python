@@ -2,15 +2,15 @@ import cv2
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
-import numpy as np
 
 def detect_faces():
-    global image_label, image, faces
+    global image_label, image_path, faces
     
     # Carga la imagen seleccionada
-    file_path = filedialog.askopenfilename()
-    if file_path:
-        image = cv2.imread(file_path)
+    image_path = filedialog.askopenfilename()
+    if image_path:
+        # Carga la imagen
+        image = cv2.imread(image_path)
         
         # Crea el clasificador de rostros
         face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -35,37 +35,27 @@ def detect_faces():
         image_label.image = image
 
 def save_result():
-    global faces, image
+    global faces, image_path
     if faces is not None and len(faces) > 0:
         # Guarda la imagen con los rostros detectados
-        file_path = filedialog.asksaveasfilename(defaultextension=".jpg")
-        if file_path:
-            # Verifica si la imagen se ha cargado correctamente
-            if image is not None:
-                # Convierte la imagen de PhotoImage a una matriz NumPy
-                image_np = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-                # Intenta guardar la imagen con los rostros detectados
+        if image_path:
+            file_path = filedialog.asksaveasfilename(defaultextension=".jpg")
+            if file_path:
                 try:
-                    # Verifica si la imagen ya está en el formato correcto (BGR)
-                    if len(image_np.shape) == 3 and image_np.shape[2] == 3:
-                        cv2.imwrite(file_path, image_np)
-                        print("Resultado guardado correctamente.")
-                    else:
-                        # Si no está en el formato correcto, intenta convertirla
-                        converted_image = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
-                        cv2.imwrite(file_path, converted_image)
-                        print("Resultado guardado correctamente.")
+                    # Carga la imagen original para evitar cambios de formato
+                    original_image = cv2.imread(image_path)
+                    # Dibuja los rectángulos en la imagen original
+                    for (x, y, w, h) in faces:
+                        cv2.rectangle(original_image, (x, y), (x+w, y+h), (0, 255, 0), 2)
+                    # Guarda la imagen con los rostros detectados
+                    cv2.imwrite(file_path, original_image)
+                    print("Resultado guardado correctamente.")
                 except Exception as e:
                     print("Error al guardar la imagen:", e)
-            else:
-                print("Error: No se ha cargado ninguna imagen.")
+        else:
+            print("Primero debes cargar una imagen.")
     else:
         print("Primero debes detectar los rostros.")
-
-
-
-
-
 
 # Configuración de la interfaz gráfica
 root = tk.Tk()
