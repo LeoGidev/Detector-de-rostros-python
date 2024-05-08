@@ -1,7 +1,7 @@
 import cv2
 
 # Carga la imagen
-image_path = 'imagen.jpg'
+image_path = 'img.jpeg'
 image = cv2.imread(image_path)
 
 # Crea el clasificador de rostros
