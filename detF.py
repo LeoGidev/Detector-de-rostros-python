@@ -1,23 +1,62 @@
 import cv2
+import tkinter as tk
+from tkinter import filedialog
+from PIL import Image, ImageTk
 
-# Carga la imagen
-image_path = 'img.jpeg'
-image = cv2.imread(image_path)
+def detect_faces():
+    global image_label, image, faces
+    
+    # Carga la imagen seleccionada
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        image = cv2.imread(file_path)
+        
+        # Crea el clasificador de rostros
+        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        
+        # Convierte la imagen a escala de grises
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        
+        # Detecta rostros en la imagen
+        faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        
+        # Dibuja un rectángulo alrededor de cada rostro detectado
+        for (x, y, w, h) in faces:
+            cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        
+        # Convierte la imagen a formato compatible con tkinter
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = Image.fromarray(image)
+        image = ImageTk.PhotoImage(image)
+        
+        # Muestra la imagen en la interfaz gráfica
+        image_label.config(image=image)
+        image_label.image = image
 
-# Crea el clasificador de rostros
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+def save_result():
+    if faces:
+        # Guarda la imagen con los rostros detectados
+        file_path = filedialog.asksaveasfilename(defaultextension=".jpg")
+        if file_path:
+            cv2.imwrite(file_path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+            print("Resultado guardado correctamente.")
+    else:
+        print("Primero debes detectar los rostros.")
 
-# Convierte la imagen a escala de grises
-gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# Configuración de la interfaz gráfica
+root = tk.Tk()
+root.title("Detector de Rostros")
 
-# Detecta rostros en la imagen
-faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+# Botones
+detect_button = tk.Button(root, text="Detectar Rostros", command=detect_faces)
+detect_button.pack(pady=10)
 
-# Dibuja un rectángulo alrededor de cada rostro detectado
-for (x, y, w, h) in faces:
-    cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
+save_button = tk.Button(root, text="Guardar Resultado", command=save_result)
+save_button.pack(pady=5)
 
-# Muestra la imagen con los rostros detectados
-cv2.imshow('Rostros detectados', image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# Etiqueta de imagen
+image_label = tk.Label(root)
+image_label.pack(padx=10, pady=10)
+
+# Iniciar la interfaz gráfica
+root.mainloop()
