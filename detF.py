@@ -34,15 +34,24 @@ def detect_faces():
         image_label.image = image
 
 def save_result():
-    global faces
+    global faces, image
     if faces is not None and len(faces) > 0:
         # Guarda la imagen con los rostros detectados
         file_path = filedialog.asksaveasfilename(defaultextension=".jpg")
         if file_path:
-            cv2.imwrite(file_path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
-            print("Resultado guardado correctamente.")
+            # Verifica si la imagen se ha cargado correctamente
+            if image is not None:
+                # Intenta guardar la imagen con los rostros detectados
+                try:
+                    cv2.imwrite(file_path, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+                    print("Resultado guardado correctamente.")
+                except Exception as e:
+                    print("Error al guardar la imagen:", e)
+            else:
+                print("Error: No se ha cargado ninguna imagen.")
     else:
         print("Primero debes detectar los rostros.")
+
 
 
 # Configuración de la interfaz gráfica
